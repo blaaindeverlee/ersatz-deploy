@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  publicRuntimeConfig: {
+    staticFolder: "/public",
+  },
+};
 
 export default nextConfig;
