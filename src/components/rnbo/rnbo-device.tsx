@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { createDevice, Device } from "@rnbo/js";
 import ParameterSlider from "@/components/rnbo/parameter-slider";
 
@@ -14,8 +14,16 @@ export interface Parameter {
   unit: string;
   type: number;
 }
+interface RNBODeviceProps {
+  onDeviceReady?: (
+    device: Device,
+    paramNameToId: (name: string, parameters: Parameter[]) => string,
+    handleParameterChange: (id: string, value: number) => void,
+    parameters: Parameter[]
+  ) => void;
+}
 
-const RNBODevice = () => {
+const RNBODevice: React.FC<RNBODeviceProps> = ({ onDeviceReady }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [mute, setMute] = useState(false);
@@ -37,28 +45,30 @@ const RNBODevice = () => {
     return parameter ? parameter.id : -1;
   };
 
-  const handleParameterChange = (parameterId: string, value: number) => {
-    if (!device) return;
+  const handleParameterChange = useCallback(
+    (parameterId: string, value: number) => {
+      if (!device) return;
 
-    // RNBO parameters are accessed directly by name
-    const param = device.parameters[parameterId];
-    console.log(param);
-    if (param) {
-      param.value = value;
+      try {
+        // Ensure the value is within bounds
+        const param = device.parameters[parameterId];
+        if (param) {
+          const boundedValue = Math.max(param.min, Math.min(param.max, value));
+          param.value = boundedValue;
 
-      // Update local state
-      setParameters((prev) =>
-        prev.map((p) => (p.id === parameterId ? { ...p, value } : p))
-      );
-    }
-  };
-
-  useEffect(() => {
-    if (device && isPlaying) {
-      const params = getDeviceParameters(device);
-      setParameters(params); // Set parameters when device is ready
-    }
-  }, [device, isPlaying, context]);
+          // Update local state
+          setParameters((prev) =>
+            prev.map((p) =>
+              p.id === parameterId ? { ...p, value: boundedValue } : p
+            )
+          );
+        }
+      } catch (error) {
+        console.error("Error updating parameter:", parameterId, error);
+      }
+    },
+    [device]
+  );
 
   useEffect(() => {
     if (!context) {
@@ -87,6 +97,8 @@ const RNBODevice = () => {
         await loadBuffer(context, createdDevice);
 
         setDevice(createdDevice);
+        const params = getDeviceParameters(createdDevice);
+        setParameters(params); // Set parameters when device is ready
 
         setIsLoaded(true);
 
@@ -100,11 +112,19 @@ const RNBODevice = () => {
 
     // Cleanup on unmount
     return () => {
+      if (device) {
+        device.node.disconnect();
+      }
       if (context) {
         context.close();
       }
     };
   }, [context]);
+
+  useEffect(() => {
+    if (!device) return;
+    onDeviceReady?.(device, paramNameToId, handleParameterChange, parameters);
+  }, [device]);
 
   const deb = () => {
     console.log(context?.state);

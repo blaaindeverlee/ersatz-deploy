@@ -437,7 +437,7 @@ export default function MediaPipeComponent() {
           width="1280"
           height="720"
         ></canvas>
-        <HandStats results={handResults} />
+        {/* <HandStats results={handResults} /> */}
       </div>
       <div className="absolute inset-0 pointer-events-none -z-10">
         <video

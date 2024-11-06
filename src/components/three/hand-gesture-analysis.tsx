@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
 import { Results, NormalizedLandmark } from "@mediapipe/hands";
 import * as THREE from "three";
 // import { boundingFrame } from "./bounding-frame";
@@ -26,6 +26,7 @@ export type GestureValues = {
 
 const HandGestureAnalysis: React.FC<HandGestureAnalysisProps> = ({
   results,
+  onGestureChange,
 }) => {
   const gestureValues = useMemo(() => {
     if (
@@ -58,7 +59,7 @@ const HandGestureAnalysis: React.FC<HandGestureAnalysisProps> = ({
         ? [results.multiHandLandmarks[0], results.multiHandLandmarks[1]]
         : [results.multiHandLandmarks[1], results.multiHandLandmarks[0]];
 
-    return {
+    const gestureValues = {
       leftHand: {
         openness: calculateHandOpenness(leftHandWorld),
         thumbProximity: calculateThumbProximity(leftHandWorld),
@@ -74,13 +75,26 @@ const HandGestureAnalysis: React.FC<HandGestureAnalysisProps> = ({
         leftHandWorld
       ),
     };
+
+    // Call onGestureChange with updated gesture values
+    // if (onGestureChange) {
+    //   onGestureChange(gestureValues);
+    // }
+
+    return gestureValues;
   }, [results]);
 
+  useEffect(() => {
+    if (onGestureChange && gestureValues) {
+      onGestureChange(gestureValues);
+    }
+  }, [gestureValues, onGestureChange]);
+
   return jsx ? (
-    <div className="absolute w-full top-0 right-0 bg-black bg-opacity-50 text-white p-4">
+    <div className="absolute bottom-20 w-48 p-4">
       {gestureValues.leftHand && (
         <div>
-          <h2>Left Hand</h2>
+          <p className="text-blue-500">Left Hand</p>
           <p>Openness: {gestureValues.leftHand.openness.toFixed(1)}</p>
           <p>
             Thumb Proximity: {gestureValues.leftHand.thumbProximity.toFixed(1)}
@@ -90,7 +104,7 @@ const HandGestureAnalysis: React.FC<HandGestureAnalysisProps> = ({
       )}
       {gestureValues.rightHand && (
         <div>
-          <h2>Right Hand</h2>
+          <p className="text-red-500">Right Hand</p>
           <p>Openness: {gestureValues.rightHand.openness.toFixed(1)}</p>
           <p>
             Thumb Proximity: {gestureValues.rightHand.thumbProximity.toFixed(1)}
@@ -100,7 +114,7 @@ const HandGestureAnalysis: React.FC<HandGestureAnalysisProps> = ({
       )}
       {gestureValues.handAngleDifference !== null && (
         <div>
-          <h2>Hand Angle Difference</h2>
+          <p>Hand Angle Difference</p>
           <p>{gestureValues.handAngleDifference.toFixed(2)}</p>
         </div>
       )}
