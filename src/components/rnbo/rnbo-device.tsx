@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { createDevice, Device } from "@rnbo/js";
 import ParameterSlider from "@/components/rnbo/parameter-slider";
 
@@ -31,6 +31,7 @@ const RNBODevice: React.FC<RNBODeviceProps> = ({ onDeviceReady }) => {
   const [context, setContext] = useState<AudioContext | undefined>();
   const [parameters, setParameters] = useState<Parameter[]>([]);
   const [showControls, setShowControls] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Group parameters by type
   const parameterGroups = {
@@ -94,7 +95,7 @@ const RNBODevice: React.FC<RNBODeviceProps> = ({ onDeviceReady }) => {
 
         createdDevice.node.connect(context.destination);
 
-        await loadBuffer(context, createdDevice);
+        await initLoadBuffer(context, createdDevice);
 
         setDevice(createdDevice);
         const params = getDeviceParameters(createdDevice);
@@ -130,7 +131,7 @@ const RNBODevice: React.FC<RNBODeviceProps> = ({ onDeviceReady }) => {
     console.log(context?.state);
   };
 
-  const loadBuffer = async (context: AudioContext, device: Device) => {
+  const initLoadBuffer = async (context: AudioContext, device: Device) => {
     try {
       // Fetch audio file
       const response = await fetch("/media/sample.wav"); // Adjust path as needed
@@ -138,6 +139,32 @@ const RNBODevice: React.FC<RNBODeviceProps> = ({ onDeviceReady }) => {
       const audioBuffer = await context.decodeAudioData(arrayBuffer);
 
       // Load into RNBO device buffer named 'mygrain'
+      await device.setDataBuffer("thegrain", audioBuffer);
+      console.log("Buffer loaded successfully");
+    } catch (error) {
+      console.error("Error loading buffer:", error);
+    }
+  };
+
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (file && context && device) {
+      const arrayBuffer = await file.arrayBuffer();
+      await loadBuffer(context, device, arrayBuffer);
+    }
+  };
+
+  const loadBuffer = async (
+    context: AudioContext,
+    device: Device,
+    arrayBuffer: ArrayBuffer
+  ) => {
+    try {
+      const audioBuffer = await context.decodeAudioData(arrayBuffer);
+
+      // Load into RNBO device buffer named 'thegrain'
       await device.setDataBuffer("thegrain", audioBuffer);
       console.log("Buffer loaded successfully");
     } catch (error) {
@@ -265,7 +292,14 @@ const RNBODevice: React.FC<RNBODeviceProps> = ({ onDeviceReady }) => {
         </div>
       </div>
 
-      {/* Play/Pause Controls */}
+      <input
+        type="file"
+        accept="audio/*"
+        ref={fileInputRef}
+        onChange={handleFileUpload}
+        className="absolute bottom-4 left-72"
+      />
+
       <button
         onClick={handlePlayPause}
         className="absolute bottom-4 left-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"

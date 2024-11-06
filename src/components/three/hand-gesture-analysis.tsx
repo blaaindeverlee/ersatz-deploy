@@ -3,7 +3,7 @@ import { Results, NormalizedLandmark } from "@mediapipe/hands";
 import * as THREE from "three";
 // import { boundingFrame } from "./bounding-frame";
 
-const jsx = false;
+const jsx = true;
 
 interface HandGestureAnalysisProps {
   results: Results | null;

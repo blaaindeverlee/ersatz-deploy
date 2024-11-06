@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import * as mpFaceMesh from "@mediapipe/face_mesh";
 import * as mpHands from "@mediapipe/hands";
 import * as mpDrawing from "@mediapipe/drawing_utils";
@@ -16,6 +16,8 @@ import Render from "@/components/three/render";
 
 import RNBODevice from "./rnbo/rnbo-device";
 import RNBOWrapper from "./rnbo/rnbo-wrapper";
+
+import { GestureValues } from "@/components/three/hand-gesture-analysis";
 
 interface CustomFaceGeometry {
   mesh: {
@@ -397,6 +399,19 @@ export default function MediaPipeComponent() {
     null
   );
   const [handResults, setHandResults] = useState<mpHands.Results | null>(null);
+  const [handGestures, setHandGestures] = useState<GestureValues | null>(null);
+
+  const onGestureChange = useCallback((gesture: GestureValues) => {
+    // console.log("change", gesture);
+    setHandGestures(gesture);
+  }, []);
+
+  // useEffect(() => {
+  //   if (onGestureChange && handGestures) {
+  //     console.log("Calling onGestureChange with:", handGestures); // Add debug log
+  //     onGestureChange(handGestures);
+  //   }
+  // }, [handGestures, onGestureChange]);
 
   useEffect(() => {
     if (videoRef.current && canvasRef.current) {
@@ -425,10 +440,13 @@ export default function MediaPipeComponent() {
   return (
     <div className="relative w-full h-screen bg-gray-100">
       <div id="three-js" className="z-10 w-full h-full">
-        <Render handResults={handResults} />
+        <Render handResults={handResults} handGestures={handGestures} />
       </div>
       <div className="absolute top-0 left-0 h-full w-full">
-        <RNBOWrapper results={handResults} />
+        <RNBOWrapper
+          results={handResults}
+          onGestureChangeParent={onGestureChange}
+        />
       </div>
       <div className="absolute top-0 left-0 inset-0 h-fit w-fit">
         <canvas

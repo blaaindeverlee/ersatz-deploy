@@ -10,6 +10,7 @@ import { debounce } from "lodash";
 
 interface RNBOWrapperProps {
   results: Results | null;
+  onGestureChangeParent: (gesture: GestureValues) => void;
 }
 
 interface DeviceHandler {
@@ -19,7 +20,10 @@ interface DeviceHandler {
   parameters: Parameter[];
 }
 
-const RNBOWrapper: React.FC<RNBOWrapperProps> = ({ results }) => {
+const RNBOWrapper: React.FC<RNBOWrapperProps> = ({
+  results,
+  onGestureChangeParent,
+}) => {
   const deviceHandlerRef = useRef<DeviceHandler | null>(null);
   const gestureQueueRef = useRef<GestureValues | null>(null);
 
@@ -124,6 +128,8 @@ const RNBOWrapper: React.FC<RNBOWrapperProps> = ({ results }) => {
 
   const onGestureChange = useCallback(
     (gesture: GestureValues) => {
+      onGestureChangeParent(gesture);
+
       if (!deviceHandlerRef.current) {
         // Queue the gesture update for when device is ready
         gestureQueueRef.current = gesture;
@@ -132,7 +138,7 @@ const RNBOWrapper: React.FC<RNBOWrapperProps> = ({ results }) => {
 
       updateParameters(gesture);
     },
-    [updateParameters]
+    [updateParameters, onGestureChangeParent]
   );
 
   return (
