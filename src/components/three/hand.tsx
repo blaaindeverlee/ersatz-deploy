@@ -77,31 +77,31 @@ const HandModel: React.FC<HandModelProps> = ({ results }) => {
   //   };
   // };
 
-  const normalizeHandLandmarks = (landmarks: Landmark[]) => {
-    // Get reference points (wrist and middle finger MCP)
-    const wrist = landmarks[0];
-    const middleMCP = landmarks[9];
+  // const normalizeHandLandmarks = (landmarks: Landmark[]) => {
+  //   // Get reference points (wrist and middle finger MCP)
+  //   const wrist = landmarks[0];
+  //   const middleMCP = landmarks[9];
 
-    // Calculate current hand size (distance between wrist and middle MCP)
-    const referenceDistance = Math.sqrt(
-      Math.pow(middleMCP.x - wrist.x, 2) +
-        Math.pow(middleMCP.y - wrist.y, 2) +
-        Math.pow(middleMCP.z - wrist.z, 2)
-    );
+  //   // Calculate current hand size (distance between wrist and middle MCP)
+  //   const referenceDistance = Math.sqrt(
+  //     Math.pow(middleMCP.x - wrist.x, 2) +
+  //       Math.pow(middleMCP.y - wrist.y, 2) +
+  //       Math.pow(middleMCP.z - wrist.z, 2)
+  //   );
 
-    // Define target size (adjust this value to change overall hand size)
-    const targetSize = 0.1;
+  //   // Define target size (adjust this value to change overall hand size)
+  //   const targetSize = 0.1;
 
-    // Calculate scale factor
-    const scaleFactor = targetSize / referenceDistance;
+  //   // Calculate scale factor
+  //   const scaleFactor = targetSize / referenceDistance;
 
-    // Apply scaling relative to wrist position
-    return landmarks.map((landmark) => ({
-      x: (landmark.x - wrist.x) * scaleFactor + wrist.x,
-      y: (landmark.y - wrist.y) * scaleFactor + wrist.y,
-      z: (landmark.z - wrist.z) * scaleFactor + wrist.z,
-    }));
-  };
+  //   // Apply scaling relative to wrist position
+  //   return landmarks.map((landmark) => ({
+  //     x: (landmark.x - wrist.x) * scaleFactor + wrist.x,
+  //     y: (landmark.y - wrist.y) * scaleFactor + wrist.y,
+  //     z: (landmark.z - wrist.z) * scaleFactor + wrist.z,
+  //   }));
+  // };
 
   const mapToFrame = (landmark: Landmark) => {
     const x = THREE.MathUtils.mapLinear(

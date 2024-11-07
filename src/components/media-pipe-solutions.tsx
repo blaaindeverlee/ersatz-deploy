@@ -6,15 +6,10 @@ import * as mpHands from "@mediapipe/hands";
 import * as mpDrawing from "@mediapipe/drawing_utils";
 import * as mpCamera from "@mediapipe/camera_utils";
 import * as controls from "@mediapipe/control_utils";
-import { ChevronLeft, ChevronRight, Hand } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import * as THREE from "three";
-import Scene from "@/components/three/scene";
-import HandModel from "@/components/three/hand";
-import HandStats from "@/components/three/hand-stats";
 import Render from "@/components/three/render";
-
-import RNBODevice from "./rnbo/rnbo-device";
 import RNBOWrapper from "./rnbo/rnbo-wrapper";
 
 import { GestureValues } from "@/components/three/hand-gesture-analysis";
@@ -395,6 +390,7 @@ export default function MediaPipeComponent() {
   const hControlsRef = useRef<HTMLDivElement>(null);
   const [showFMControls, setShowFMControls] = useState(false);
   const [showHControls, setShowHControls] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [faceResults, setFaceResults] = useState<mpFaceMesh.Results | null>(
     null
   );

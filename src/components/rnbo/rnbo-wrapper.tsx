@@ -15,8 +15,8 @@ interface RNBOWrapperProps {
 
 interface DeviceHandler {
   device: Device;
-  paramNameToId: (name: string, parameters: Parameter[]) => string;
-  handleParameter: (id: string, value: number) => void;
+  paramNameToId: (name: string, parameters: Parameter[]) => number;
+  handleParameter: (id: number, value: number) => void;
   parameters: Parameter[];
 }
 
@@ -64,7 +64,7 @@ const RNBOWrapper: React.FC<RNBOWrapperProps> = ({
           ];
 
           updates.forEach(({ id, value }) => {
-            if (id !== "-1") {
+            if (id !== -1) {
               // Only update if parameter exists
               handleParameter(id, value);
             }
@@ -91,7 +91,7 @@ const RNBOWrapper: React.FC<RNBOWrapperProps> = ({
           ];
 
           updates.forEach(({ id, value }) => {
-            if (id !== "-1") {
+            if (id !== -1) {
               // Only update if parameter exists
               handleParameter(id, value);
             }
@@ -107,8 +107,8 @@ const RNBOWrapper: React.FC<RNBOWrapperProps> = ({
   const handleDeviceReady = useCallback(
     (
       device: Device,
-      paramNameToId: (name: string, parameters: Parameter[]) => string,
-      handleParameterChange: (id: string, value: number) => void,
+      paramNameToId: (name: string, parameters: Parameter[]) => number,
+      handleParameterChange: (id: number, value: number) => void,
       parameters: Parameter[]
     ) => {
       deviceHandlerRef.current = {
