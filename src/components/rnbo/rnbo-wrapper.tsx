@@ -100,7 +100,7 @@ const RNBOWrapper: React.FC<RNBOWrapperProps> = ({
       } catch (error) {
         console.error("Error updating parameters:", error);
       }
-    }, 16), // Debounce to roughly 60fps
+    }, 0), // Debounce to roughly 60fps
     []
   );
 
