@@ -91,7 +91,7 @@ const HandGestureAnalysis: React.FC<HandGestureAnalysisProps> = ({
   }, [gestureValues, onGestureChange]);
 
   return jsx ? (
-    <div className="absolute bottom-20 w-48 p-4">
+    <div className="absolute bottom-20 w-48 p-4 pointer-events-none text-green-500">
       {gestureValues.leftHand && (
         <div>
           <p className="text-blue-500">Left Hand</p>

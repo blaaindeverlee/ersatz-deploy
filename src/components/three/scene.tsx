@@ -16,8 +16,6 @@ const Scene: React.FC<SceneProps> = ({ children }) => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Enter" && controlsRef.current) {
         controlsRef.current.reset();
-        // controlsRef.current.target.set(0, 0, 0);
-        // controlsRef.current.object.position.set(0, 0, 0);
         controlsRef.current.update();
       }
     };
@@ -30,10 +28,8 @@ const Scene: React.FC<SceneProps> = ({ children }) => {
   }, []);
 
   return (
-    <Canvas>
-      <ambientLight intensity={0.1} />
-      <directionalLight position={[0, 0, 5]} color="red" />
-      <axesHelper args={[10]} />
+    <Canvas style={{ background: "black" }}>
+      <directionalLight position={[0, 5, 0]} intensity={1} />
       {children}
       <OrbitControls ref={controlsRef} />
       <Stats />

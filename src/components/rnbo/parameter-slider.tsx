@@ -2,7 +2,7 @@ import { Parameter } from "@/components/rnbo/rnbo-device";
 
 interface ParameterSliderProps {
   parameter: Parameter;
-  onChange: (id: string, value: number) => void;
+  onChange: (id: number, value: number) => void;
 }
 
 const ParameterSlider: React.FC<ParameterSliderProps> = ({

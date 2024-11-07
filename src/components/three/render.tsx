@@ -22,7 +22,7 @@ const ThreeDRenderer: React.FC<ThreeDRendererProps> = ({
     <Scene>
       <BoundingFrameDisplay>
         <Hand results={handResults} />
-        <HandBlob results={handResults} gestureValues={null} />
+        <HandBlob results={handResults} gestureValues={handGestures} />
       </BoundingFrameDisplay>
     </Scene>
   );

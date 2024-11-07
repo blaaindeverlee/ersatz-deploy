@@ -83,8 +83,9 @@ const RNBOWrapper: React.FC<RNBOWrapperProps> = ({
             //   id: paramNameToId("ipPosition", parameters),
             //   value: clamp(gesture.rightHand.wristZone, -1, 1),
             // },
+
             {
-              id: paramNameToId("ipSampleSize", parameters),
+              id: paramNameToId("ipDelayFeedback", parameters),
               value: clamp(gesture.rightHand.thumbProximity, -1, 1),
             },
           ];

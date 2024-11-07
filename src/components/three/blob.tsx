@@ -1,4 +1,5 @@
-import React, { useRef, useMemo } from "react";
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import React, { useRef, useMemo, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Results } from "@mediapipe/hands";
 import * as THREE from "three";
@@ -9,6 +10,7 @@ const vertexShader = `
 uniform float uTime;
 uniform vec3 uHandPoints[21];
 uniform float uOpenness;
+uniform float uPitch;
 
 varying vec2 vUv;
 varying float vDistortion;
@@ -95,21 +97,23 @@ void main() {
   // Start with the original position
   vec3 pos = position;
   
+  // Calculate uniform stretch factor
+  float stretchAmount = 1.0 + uOpenness * 0.5; // Range 0.5 to 1.5
+  
+  // Apply uniform stretch to all axes
+  pos *= stretchAmount;
+  
   // Apply noise-based deformation
   float noiseFreq = 1.5;
-  float noiseAmp = 0.95;
+  float noiseAmp = 0.15;
   vec3 noisePos = vec3(pos.x * noiseFreq + uTime, pos.y, pos.z);
-  pos.z += snoise(noisePos) * noiseAmp;
-  
-  // Calculate stretch factor based on openness
-  float stretchAmount = 1.0 + uOpenness * 0.5; // This will give a range of 0.5 to 1.5
-  pos.y *= stretchAmount;
+  pos += snoise(noisePos) * noiseAmp * vec3(1.0); // Apply noise in all directions
   
   // Apply hand point influence with reduced effect
   for(int i = 0; i < 21; i++) {
     vec3 handPoint = uHandPoints[i];
     float dist = distance(pos, handPoint);
-    float influence = smoothstep(0.3, 0.0, dist) * 0.05; // Reduced influence
+    float influence = smoothstep(0.3, 0.0, dist) * 0.05;
     pos += normalize(handPoint - pos) * influence;
   }
 
@@ -140,32 +144,56 @@ interface BlobProps {
 
 const Blob: React.FC<BlobProps> = ({ handPoints, gestureValues }) => {
   const mesh = useRef<THREE.Mesh>(null);
-  const uniforms = useMemo(
-    () => ({
-      uTime: { value: 0 },
-      uHandPoints: { value: handPoints },
-      uOpenness: { value: 0 },
-    }),
-    [handPoints, gestureValues]
-  );
+  const clock = useRef(new THREE.Clock()); // Create local clock reference
 
-  useFrame((state) => {
+  const uniformsRef = useRef({
+    uTime: { value: 0 },
+    uHandPoints: { value: handPoints },
+    uOpenness: { value: 0 },
+    uPitch: { value: 0 }, //lol remove this shit
+  });
+
+  useEffect(() => {
+    uniformsRef.current.uHandPoints.value = handPoints;
+    uniformsRef.current.uOpenness.value =
+      gestureValues?.leftHand?.openness || 0;
+    uniformsRef.current.uPitch.value = gestureValues?.leftHand?.wristZone || 0;
+  }, [handPoints, gestureValues]);
+
+  useFrame(() => {
     if (mesh.current) {
-      // Update time
-      uniforms.uTime.value = state.clock.getElapsedTime();
+      const elapsedTime = clock.current.getElapsedTime();
 
-      // // Update hand points
-      // uniforms.uHandPoints.value = handPoints;
+      // Map wrist zone (-1 to 1) to rotation speed (0.05 to 0.5)
+      const baseRotationSpeed = 0.1;
+      const rotationSpeed = uniformsRef.current.uPitch.value
+        ? THREE.MathUtils.mapLinear(
+            uniformsRef.current.uPitch.value,
+            -1,
+            1,
+            0.05,
+            0.5
+          )
+        : baseRotationSpeed;
 
-      // // Update openness value
-      // if (gestureValues?.leftHand) {
-      //   uniforms.uOpenness.value = gestureValues.leftHand.openness;
-      // } else {
-      //   uniforms.uOpenness.value = 0;
-      // }
+      // Apply rotation with mapped speed
+      mesh.current.rotation.y = elapsedTime * rotationSpeed;
+
+      // Update other uniforms
+      uniformsRef.current.uTime.value = elapsedTime;
+      uniformsRef.current.uHandPoints.value = handPoints;
+
+      if (gestureValues?.leftHand) {
+        uniformsRef.current.uOpenness.value = gestureValues.leftHand.openness;
+      } else {
+        uniformsRef.current.uOpenness.value = 0;
+      }
+
+      const material = mesh.current.material as THREE.ShaderMaterial;
+      material.uniformsNeedUpdate = true;
     }
   }),
-    [];
+    [gestureValues];
 
   return (
     <mesh ref={mesh}>
@@ -173,7 +201,7 @@ const Blob: React.FC<BlobProps> = ({ handPoints, gestureValues }) => {
       <shaderMaterial
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
-        uniforms={uniforms}
+        uniforms={uniformsRef.current}
       />
     </mesh>
   );

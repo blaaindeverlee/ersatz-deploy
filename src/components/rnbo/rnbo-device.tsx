@@ -5,7 +5,8 @@ import { createDevice, Device } from "@rnbo/js";
 import ParameterSlider from "@/components/rnbo/parameter-slider";
 
 export interface Parameter {
-  id: any;
+  id: number;
+  key: string;
   name: string;
   value: number;
   min: number;
@@ -17,14 +18,14 @@ export interface Parameter {
 interface RNBODeviceProps {
   onDeviceReady?: (
     device: Device,
-    paramNameToId: (name: string, parameters: Parameter[]) => string,
-    handleParameterChange: (id: string, value: number) => void,
+    paramNameToId: (name: string, parameters: Parameter[]) => number,
+    handleParameterChange: (id: number, value: number) => void,
     parameters: Parameter[]
   ) => void;
 }
 
 const RNBODevice: React.FC<RNBODeviceProps> = ({ onDeviceReady }) => {
-  const [isLoaded, setIsLoaded] = useState(false);
+  // const [isLoaded, setIsLoaded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [mute, setMute] = useState(false);
   const [device, setDevice] = useState<Device | null>(null);
@@ -34,20 +35,20 @@ const RNBODevice: React.FC<RNBODeviceProps> = ({ onDeviceReady }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Group parameters by type
-  const parameterGroups = {
-    main: ["ipVolume", "ipPitch", "ipSpeed"],
-    delay: ["ipDelayMix", "ipDelayTime", "ipDelayFeedback"],
-    reverb: ["iReverbTime", "ipReverbRoomSize", "gigaverb/revtime"],
-    grain: ["ipGrainLimit", "ipPosition", "ipSampleSize"],
-  };
+  // const parameterGroups = {
+  //   main: ["ipVolume", "ipPitch", "ipSpeed"],
+  //   delay: ["ipDelayMix", "ipDelayTime", "ipDelayFeedback"],
+  //   reverb: ["iReverbTime", "ipReverbRoomSize", "gigaverb/revtime"],
+  //   grain: ["ipGrainLimit", "ipPosition", "ipSampleSize"],
+  // };
 
-  const paramNameToId = (name: string, parameters: Parameter[]): string => {
+  const paramNameToId = (name: string, parameters: Parameter[]): number => {
     const parameter = parameters.find((p) => p.name === name);
     return parameter ? parameter.id : -1;
   };
 
   const handleParameterChange = useCallback(
-    (parameterId: string, value: number) => {
+    (parameterId: number, value: number) => {
       if (!device) return;
 
       try {
@@ -101,7 +102,7 @@ const RNBODevice: React.FC<RNBODeviceProps> = ({ onDeviceReady }) => {
         const params = getDeviceParameters(createdDevice);
         setParameters(params); // Set parameters when device is ready
 
-        setIsLoaded(true);
+        // setIsLoaded(true);
 
         console.log(getDeviceParameters(createdDevice));
       } catch (error) {
@@ -180,7 +181,7 @@ const RNBODevice: React.FC<RNBODeviceProps> = ({ onDeviceReady }) => {
     // contextRef.current = context;
     context.resume();
     setContext(context);
-    setIsLoaded(true);
+    // setIsLoaded(true);
   };
 
   const handlePlayPause = async () => {
@@ -226,10 +227,11 @@ const RNBODevice: React.FC<RNBODeviceProps> = ({ onDeviceReady }) => {
     const paramList: Parameter[] = [];
 
     // RNBO parameters are accessed as an object
-    Object.entries(device.parameters).forEach(([key, param]) => {
+    Object.entries(device.parameters).forEach(([key, param], index) => {
       paramList.push({
-        id: key, // Use the actual parameter name as ID
-        name: param.name || key,
+        id: index, // Use the actual parameter name as ID
+        key: key,
+        name: param.name,
         value: param.value,
         min: param.min,
         max: param.max,
@@ -257,7 +259,7 @@ const RNBODevice: React.FC<RNBODeviceProps> = ({ onDeviceReady }) => {
         }`}
       >
         <button
-          className="relative top-10 right-4 rounded-full hover:bg-gray-100"
+          className="relative top-10 right-4 rounded-full bg-white hover:bg-gray-100"
           onClick={() => setShowControls(!showControls)}
         >
           {showControls ? (
