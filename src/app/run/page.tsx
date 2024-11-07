@@ -1,6 +1,6 @@
 import React from "react";
 import dynamic from "next/dynamic";
-import Scene from "@/components/three/scene";
+// import Scene from "@/components/three/scene";
 
 // const FaceMesh = dynamic(() => import("@/components/media-pipe"), {
 //   ssr: false,
