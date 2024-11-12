@@ -79,10 +79,10 @@ const RNBOWrapper: React.FC<RNBOWrapperProps> = ({
             },
 
             // updating ipPosition crashed engine, probably becuase the order the values are calcualted or something idk lol
-            // {
-            //   id: paramNameToId("ipPosition", parameters),
-            //   value: clamp(gesture.rightHand.wristZone, -1, 1),
-            // },
+            {
+              id: paramNameToId("ipPosition", parameters),
+              value: clamp(gesture.rightHand.wristZone, -1, 1),
+            },
 
             {
               id: paramNameToId("ipDelayFeedback", parameters),
@@ -100,7 +100,7 @@ const RNBOWrapper: React.FC<RNBOWrapperProps> = ({
       } catch (error) {
         console.error("Error updating parameters:", error);
       }
-    }, 0), // Debounce to roughly 60fps
+    }, 0),
     []
   );
 

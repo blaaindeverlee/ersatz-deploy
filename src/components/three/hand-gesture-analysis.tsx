@@ -302,9 +302,9 @@ function calculateWristZonePosition(landmarks: NormalizedLandmark[]): number {
   // Right side of screen (0.5 to 1)
   else {
     if (wrist.x <= 0.75) {
-      r = THREE.MathUtils.mapLinear(wrist.x, 0.5, 0.75, 0, 1);
-    } else {
       r = THREE.MathUtils.mapLinear(wrist.x, 0.75, 1, 0, -1);
+    } else {
+      r = THREE.MathUtils.mapLinear(wrist.x, 0.5, 0.75, 1, 0);
     }
   }
 
