@@ -135,7 +135,7 @@ const RNBODevice: React.FC<RNBODeviceProps> = ({ onDeviceReady }) => {
   const initLoadBuffer = async (context: AudioContext, device: Device) => {
     try {
       // Fetch audio file
-      const response = await fetch("/media/sample.wav"); // Adjust path as needed
+      const response = await fetch("/media/sample.mp3"); // Adjust path as needed
       const arrayBuffer = await response.arrayBuffer();
       const audioBuffer = await context.decodeAudioData(arrayBuffer);
 

@@ -12,10 +12,7 @@
         "steps": 2,
         "initialValue": 1,
         "isEnum": true,
-        "enumValues": [
-          0,
-          1
-        ],
+        "enumValues": [0, 1],
         "displayName": "",
         "unit": "",
         "order": 0,
@@ -93,7 +90,7 @@
         "maximum": 1,
         "exponent": 1,
         "steps": 0,
-        "initialValue": 0.5,
+        "initialValue": -0.8,
         "isEnum": false,
         "enumValues": [],
         "displayName": "",
@@ -656,7 +653,7 @@
           "value": 0.95
         },
         "ipDelayMix": {
-          "value": 1
+          "value": -0.8
         },
         "ipDelayReverbDry": {
           "value": 0
