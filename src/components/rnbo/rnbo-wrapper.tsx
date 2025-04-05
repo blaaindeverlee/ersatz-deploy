@@ -71,6 +71,20 @@ const RNBOWrapper: React.FC<RNBOWrapperProps> = ({
           });
         }
 
+        // const interpolateRange = (
+        //   value: number,
+        //   inMin = -1,
+        //   inMax = 1,
+        //   outMin = 1000,
+        //   outMax = 2500
+        // ) => {
+        //   const clampedValue = clamp(value, inMin, inMax);
+        //   return (
+        //     ((clampedValue - inMin) / (inMax - inMin)) * (outMax - outMin) +
+        //     outMin
+        //   );
+        // };
+
         if (gesture.rightHand) {
           const updates = [
             {
@@ -84,10 +98,10 @@ const RNBOWrapper: React.FC<RNBOWrapperProps> = ({
               value: clamp(gesture.rightHand.wristZone, -1, 1),
             },
 
-            {
-              id: paramNameToId("ipDelayFeedback", parameters),
-              value: clamp(gesture.rightHand.thumbProximity, -1, 1),
-            },
+            // {
+            //   id: paramNameToId("ipSampleSizeMax", parameters),
+            //   value: interpolateRange(gesture.rightHand.thumbProximity),
+            // },
           ];
 
           updates.forEach(({ id, value }) => {

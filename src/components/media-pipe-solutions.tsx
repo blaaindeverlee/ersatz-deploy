@@ -501,7 +501,7 @@ export default function MediaPipeComponent() {
         }`}
       >
         <Button
-          variant="ghost"
+          // variant="ghost"
           size="icon"
           className="absolute top-2 right-2"
           onClick={() => setShowHControls(!showHControls)}
