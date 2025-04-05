@@ -90,7 +90,7 @@
         "maximum": 1,
         "exponent": 1,
         "steps": 0,
-        "initialValue": -0.8,
+        "initialValue": -0.95,
         "isEnum": false,
         "enumValues": [],
         "displayName": "",
@@ -662,7 +662,7 @@
           "value": 0
         },
         "ipDelayTime": {
-          "value": 500
+          "value": 0
         },
         "ipEndPosition": {
           "value": 0

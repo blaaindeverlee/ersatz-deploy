@@ -42,6 +42,11 @@ const RNBODevice: React.FC<RNBODeviceProps> = ({ onDeviceReady }) => {
   //   grain: ["ipGrainLimit", "ipPosition", "ipSampleSize"],
   // };
 
+  useEffect(() => {
+    if (!parameters.length) return;
+    handleParameterChange(paramNameToId("ipDelayTime", parameters), 0); // Set default volume
+  }, [parameters]);
+
   const paramNameToId = (name: string, parameters: Parameter[]): number => {
     const parameter = parameters.find((p) => p.name === name);
     return parameter ? parameter.id : -1;
@@ -202,6 +207,7 @@ const RNBODevice: React.FC<RNBODeviceProps> = ({ onDeviceReady }) => {
         handleParameterChange(ipStateId, 0);
       } else {
         handleParameterChange(ipStateId, 1);
+        // handleParameterChange(paramNameToId("ipDelayTime", parameters), 0); // set delay time to 0
       }
 
       setIsPlaying(!isPlaying);
@@ -259,13 +265,13 @@ const RNBODevice: React.FC<RNBODeviceProps> = ({ onDeviceReady }) => {
         }`}
       >
         <button
-          className="relative top-10 right-4 rounded-full bg-white hover:bg-gray-100"
+          className="absolute top-16 right-4 p-5 rounded-md bg-gray-300 hover:bg-blue-50"
           onClick={() => setShowControls(!showControls)}
         >
           {showControls ? (
             <span className="h-4 w-4">→</span>
           ) : (
-            <span className="h-4 w-4">←</span>
+            <span className="h-4 w-4 p-4">parameters</span>
           )}
         </button>
 
@@ -294,34 +300,40 @@ const RNBODevice: React.FC<RNBODeviceProps> = ({ onDeviceReady }) => {
         </div>
       </div>
 
-      <input
-        type="file"
-        accept="audio/*"
-        ref={fileInputRef}
-        onChange={handleFileUpload}
-        className="absolute bottom-4 left-72"
-      />
+      <div className="absolute bottom-4 flex-row justify-evenly space-x-4">
+        <button
+          onClick={handlePlayPause}
+          className={`px-4 py-2 text-white rounded ${
+            isPlaying
+              ? "bg-red-500 hover:bg-red-600"
+              : "bg-green-500 hover:bg-green-600"
+          }`}
+        >
+          {isPlaying ? "Stop Audio Engine" : "Start Audio Engine"}
+        </button>
 
-      <button
-        onClick={handlePlayPause}
-        className="absolute bottom-4 left-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-      >
-        {isPlaying ? "Stop" : "Start"}
-      </button>
+        <button
+          onClick={handleMute}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Mute
+        </button>
 
-      <button
-        onClick={handleMute}
-        className="absolute bottom-4 left-24 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-      >
-        Mute
-      </button>
+        <button
+          onClick={deb}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          debug
+        </button>
 
-      <button
-        onClick={deb}
-        className="absolute bottom-4 left-44 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-      >
-        debug
-      </button>
+        <input
+          type="file"
+          accept="audio/*"
+          ref={fileInputRef}
+          onChange={handleFileUpload}
+          className=""
+        />
+      </div>
     </div>
   );
 };
